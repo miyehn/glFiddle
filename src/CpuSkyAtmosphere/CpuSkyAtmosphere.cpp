@@ -551,12 +551,12 @@ void sky::SkyViewLutSim::runSim() {
 
 CpuSkyAtmosphere::CpuSkyAtmosphere() {
 	renderingParams = {
-		.cameraPosWS = glm::vec3(200, 300, 200),
-		.dir2sun = glm::normalize(glm::vec3(1, 2, 0.2f)),
+		.cameraPosWS = glm::vec3(0, 0, 11000),
+		.dir2sun = glm::normalize(glm::vec3(1, 2, 0.1f)),
 		.sunLuminance = {1, 1, 1},
 		.skyViewNumSamplesMinMax = {16, 128},
-		.exposure = 10,
-		.sunAngularRadius = 0.004675f
+		.exposure = 1,
+		.sunAngularRadius = 0.f// 0.004675f // turn off sundisc
 	};
 	auto& atmosphere = renderingParams.atmosphere;
 	float mieScattering = 0.003996f;

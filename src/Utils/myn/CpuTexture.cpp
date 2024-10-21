@@ -44,16 +44,16 @@ void CpuTexture::writeFile_R8G8B8A8(const std::string &filename, bool gammaCorre
 	}
 }
 
-void CpuTexture::writeFile_R32G32B32A32(const std::string& filename, bool openFile) const {
+void CpuTexture::writeFile_R32G32B32(const std::string& filename, bool openFile) const {
 	// handle gamma
-	std::vector<vec4> texels(buffer.size());
+	std::vector<vec3> texels(buffer.size());
 	for (int i = 0; i < buffer.size(); i++) {
-		auto p = buffer[i];
-		const vec4 gamma(vec3(2.2f), 1.0f);
+		auto p = vec3(buffer[i].r, buffer[i].g, buffer[i].b);
+		const vec3 gamma(2.2f);
 		texels[i] = glm::pow(p, gamma);
 	}
 	// save to disk
-	SaveEXR(reinterpret_cast<const float*>(texels.data()), width, height, 4, 0, filename.c_str(), nullptr);
+	SaveEXR(reinterpret_cast<const float*>(texels.data()), width, height, 3, 0, filename.c_str(), nullptr);
 	if (openFile) {
 		ShellExecute(0, "open", filename.c_str(), 0, 0, SW_SHOW);
 	}

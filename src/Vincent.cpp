@@ -34,8 +34,16 @@ int main(int argc, const char * argv[])
 
 	myn::sky::CpuSkyAtmosphere sky;
 	sky.updateLuts();
+
+	// create longlat map (main render pass)
 	myn::CpuTexture skyTexture = sky.createSkyTexture(width, height);
-	skyTexture.writeFile_R32G32B32A32(output_path, true);
+
+	// query transmittance to sun
+	glm::vec3 transmittanceToSun = sky.sampleSunTransmittance(sky.renderingParams.dir2sun);
+	LOG("transmittance to sun: (%.3f, %.3f, %.3f)", transmittanceToSun.r, transmittanceToSun.g, transmittanceToSun.b);
+
+	// output to file
+	skyTexture.writeFile_R32G32B32(output_path, true);
 
 	return 0;
 }

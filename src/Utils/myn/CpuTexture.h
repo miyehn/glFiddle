@@ -33,7 +33,7 @@ public:
 
 	void writeFile_R8G8B8A8(const std::string &filename, bool gammaCorrect, bool openFile) const;
 
-	void writeFile_R32G32B32A32(const std::string& filename, bool openFile) const;
+	void writeFile_R32G32B32(const std::string& filename, bool openFile) const;
 
 private:
 	int width = 0;
