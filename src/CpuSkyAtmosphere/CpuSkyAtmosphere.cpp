@@ -25,6 +25,17 @@ vec3 projectToPerpendicularPlane(vec3 v, vec3 n) {
 	return v - parallelComponent;
 }
 
+// https://gist.github.com/ayamflow/93e0979f09d25a723914c47818ffa151
+vec3 uvToViewDir_longlat2(vec2 uv) {
+	float theta = uv.x * TWO_PI;
+	float phi = uv.y * PI;
+	float x = sin(phi) * cos(theta);
+	float z = cos(phi);
+	float y = sin(phi) * sin(theta);
+	return normalize(vec3(x, y, z));
+}
+
+// todo: the above 2 seem incorrect
 vec3 uvToViewDir_longlat(vec2 uv) {
 	float theta = (uv.x - 0.5f) * TWO_PI;
 	float phi = (uv.y - 0.5f) * PI;
@@ -471,7 +482,7 @@ void SkyAtmosphereSim::runSim() {
 
 	dispatchShader([&](uint32_t x, uint32_t y) {
 		vec2 uv = vec2(float(x + 0.5f) / texdim.x, float(y + 0.5f) / texdim.y);
-		vec3 viewDir = uvToViewDir_longlat(uv);
+		vec3 viewDir = uvToViewDir_longlat2(uv);
 		vec3 cameraPosES = ws2es(renderingParams.cameraPosWS, renderingParams.atmosphere.bottomRadius);
 
 		float bottomRadius = renderingParams.atmosphere.bottomRadius;

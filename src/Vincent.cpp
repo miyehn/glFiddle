@@ -10,7 +10,7 @@
 
 int main(int argc, const char * argv[])
 {
-	cxxopts::Options options("aszelea", "pathtrace to file");
+	cxxopts::Options options("vincent", "skybox");
 	options.allow_unrecognised_options();
 	options.add_options()
 		("w,width", "window width", cxxopts::value<int>())
@@ -35,7 +35,7 @@ int main(int argc, const char * argv[])
 	myn::sky::CpuSkyAtmosphere sky;
 	sky.updateLuts();
 	myn::CpuTexture skyTexture = sky.createSkyTexture(width, height);
-	skyTexture.writeFile(output_path, false, true);
+	skyTexture.writeFile_R32G32B32A32(output_path, true);
 
 	return 0;
 }

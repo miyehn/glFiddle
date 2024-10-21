@@ -117,6 +117,7 @@ set(ASZELEA_SRC
 set(VINCENT_SRC
 	src/Vincent.cpp
 	src/Utils/StbImageImpl.cpp
+	src/Utils/TinyExrImpl.cpp
 	src/Utils/myn/ShaderSimulator.cpp
 	src/CpuSkyAtmosphere/CpuSkyAtmosphere.cpp
 	src/Utils/myn/CpuTexture.cpp)

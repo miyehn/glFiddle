@@ -3,6 +3,7 @@
 //
 
 #include <stb_image/stb_image_write.h>
+#include <tinyexr/tinyexr.h>
 #include <windows.h>
 #include "CpuTexture.h"
 #include "Log.h"
@@ -26,7 +27,7 @@ glm::vec4 CpuTexture::loadTexel(int x, int y) const {
 	return buffer[y * width + x];
 }
 
-void CpuTexture::writeFile(const std::string &filename, bool gammaCorrect, bool openFile) const {
+void CpuTexture::writeFile_R8G8B8A8(const std::string &filename, bool gammaCorrect, bool openFile) const {
 	std::vector<u8vec4> u8buf(buffer.size());
 	for (int i = 0; i < buffer.size(); i++) {
 		auto p = buffer[i];
@@ -43,6 +44,21 @@ void CpuTexture::writeFile(const std::string &filename, bool gammaCorrect, bool 
 	}
 }
 
+void CpuTexture::writeFile_R32G32B32A32(const std::string& filename, bool openFile) const {
+	// handle gamma
+	std::vector<vec4> texels(buffer.size());
+	for (int i = 0; i < buffer.size(); i++) {
+		auto p = buffer[i];
+		const vec4 gamma(vec3(2.2f), 1.0f);
+		texels[i] = glm::pow(p, gamma);
+	}
+	// save to disk
+	SaveEXR(reinterpret_cast<const float*>(texels.data()), width, height, 4, 0, filename.c_str(), nullptr);
+	if (openFile) {
+		ShellExecute(0, "open", filename.c_str(), 0, 0, SW_SHOW);
+	}
+}
+
 glm::vec4 CpuTexture::sampleBilinear(glm::vec2 uv, CpuTexture::WrapMode wm) const {
 	if (wm == WM_Clamp) {
 		uv = glm::clamp(uv, vec2(0), vec2(1));
@@ -53,14 +69,16 @@ glm::vec4 CpuTexture::sampleBilinear(glm::vec2 uv, CpuTexture::WrapMode wm) cons
 	} else {
 		ASSERT(false)
 	}
+	uint uwidth = (uint)width;
+	uint uheight = (uint)height;
 	vec2 coords = vec2(width * uv.x, height * uv.y);
 	vec2 deci = glm::fract(coords);
-	ivec2 c00(
-		min(width-1, int(glm::floor(coords.x))),
-		min(height-1, int(glm::floor(coords.y))));
-	ivec2 c10(min(width-1, c00.x + 1), c00.y);
-	ivec2 c01(c00.x, min(height-1, c00.y + 1));
-	ivec2 c11(min(width-1, c00.x + 1), min(height-1, c00.y + 1));
+	uvec2 c00(
+		min(uwidth-1, uint(glm::floor(coords.x))),
+		min(uheight-1, uint(glm::floor(coords.y))));
+	uvec2 c10(min(uwidth-1, c00.x + 1), c00.y);
+	ivec2 c01(c00.x, min(uheight-1, c00.y + 1));
+	ivec2 c11(min(uwidth-1, c00.x + 1), min(uheight-1, c00.y + 1));
 	vec4 v00 = loadTexel(c00.x, c00.y);
 	vec4 v10 = loadTexel(c10.x, c10.y);
 	vec4 v01 = loadTexel(c01.x, c01.y);
