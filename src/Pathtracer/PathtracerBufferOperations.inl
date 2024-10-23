@@ -1,4 +1,5 @@
 
+#if ISPC
 struct ISPC_Data
 {
 	std::vector<ispc::Camera> camera;
@@ -155,6 +156,7 @@ void Pathtracer::load_ispc_data() {
 
 	TRACE("reloaded ISPC data");
 }
+#endif
 
 void Pathtracer::set_mainbuffer_rgb(uint32_t i, vec3 rgb) {
 	uint32_t pixel_size = NUM_CHANNELS * SIZE_PER_CHANNEL;
@@ -190,6 +192,7 @@ void Pathtracer::raytrace_tile(uint32_t tid, uint32_t tile_index) {
 	uint32_t x_offset = X * tile_size;
 	uint32_t y_offset = Y * tile_size;
 
+#if ISPC
 	if (cached_config.ISPC)
 	{
 		// dispatch task to ispc
@@ -222,6 +225,7 @@ void Pathtracer::raytrace_tile(uint32_t tid, uint32_t tile_index) {
 			ispc_data->aperture_radius);
 	}
 	else
+#endif
 	{
 		for (uint32_t y = 0; y < tile_h; y++) {
 			for (uint32_t x = 0; x < tile_w; x++) {

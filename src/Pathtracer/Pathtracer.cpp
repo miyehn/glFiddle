@@ -28,7 +28,9 @@
 #define SIZE_PER_CHANNEL 1
 
 // include this generated header to be able to use the kernels
+#if ISPC
 #include "pathtracer_kernel_ispc.h"
+#endif
 #include "Assets/SceneAsset.h"
 #include "Scene/SkyAtmosphere/SkyAtmosphere.h"
 
@@ -178,7 +180,9 @@ void Pathtracer::initialize() {
 		uint32_t old_num_threads = cached_config.NumThreads;
 
 		// read from file
+#if ISPC
 		cached_config.ISPC = cfg->lookup<int>("ISPC");
+#endif
 		cached_config.UseBVH = cfg->lookup<int>("UseBVH");
 
 		cached_config.Multithreaded = cfg->lookup<int>("Multithreaded");
@@ -467,9 +471,11 @@ void Pathtracer::pause_trace() {
 void Pathtracer::continue_trace() {
 	TRACE("continue trace");
 	last_begin_time = std::chrono::high_resolution_clock::now();
+#if ISPC
 	if (cached_config.ISPC) {
 		load_ispc_data();
 	}
+#endif
 	paused = false;
 }
 
@@ -502,8 +508,11 @@ void Pathtracer::render(VkCommandBuffer cmdbuf)
 	}
 
 	// update
-	if (cached_config.Multithreaded && !cached_config.ISPC) // multithreaded c++
-	{
+	if (cached_config.Multithreaded // multithreaded c++
+#if ISPC
+		&& !cached_config.ISPC
+#endif
+	){
 		if (!finished) {
 			int uploaded_threads = 0;
 			int finished_threads = 0;

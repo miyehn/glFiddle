@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_CXX_FLAGS "-O3")
 
 if(WIN32)
-	set(VULKAN_SDK C:/VulkanSDK/1.3.216.0)
+	set(VULKAN_SDK C:/VulkanSDK/1.3.296.0)
 	set(Vulkan_LIBRARY ${VULKAN_SDK}/Lib/vulkan-1.lib)
 	set(ISPC_CXX_COMPILER cl)
 endif(WIN32)
@@ -36,7 +36,7 @@ set(ELLYN_SRC
 	src/Pathtracer/BSDF.cpp
 	src/Pathtracer/PathtracerLight.cpp
 	src/Pathtracer/BVH.cpp
-	${CMAKE_BINARY_DIR}/pathtracer_kernel.o
+	# ${CMAKE_BINARY_DIR}/pathtracer_kernel.o # ISPC-specific
 	${CMAKE_SOURCE_DIR}/include/imgui/imgui.h
 	${CMAKE_SOURCE_DIR}/include/imgui/imgui.cpp
 	${CMAKE_SOURCE_DIR}/include/imgui/imgui_demo.cpp
@@ -173,6 +173,7 @@ include_directories(PUBLIC src include)
 target_include_directories(ellyn PUBLIC ${Vulkan_INCLUDE_DIR})
 target_include_directories(ellyn PUBLIC include/SDL2)
 target_include_directories(ellyn PUBLIC include/imgui)
+target_include_directories(vin PUBLIC include)
 
 target_compile_definitions(ellyn PRIVATE GRAPHICS_DISPLAY=1)
 target_compile_definitions(asz PRIVATE GRAPHICS_DISPLAY=0)
@@ -201,7 +202,10 @@ add_custom_target(ispc
 	DEPENDS ${KERNEL_H} ${KERNEL_O}
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
-add_dependencies(ellyn ispc)
+
+# [10/2024] disabling ispc for now because it's not installed on this pc
+# add_dependencies(ellyn ispc)
+add_definitions(-DISPC=0)
 
 #-------- vulkan shaders --------
 set(VULKAN_SHADERS_SRC_DIR ${CMAKE_SOURCE_DIR}/shaders)
