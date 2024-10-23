@@ -6,7 +6,6 @@
 #include "PathtracerLight.hpp"
 #include "Assets/ConfigAsset.hpp"
 #include "Render/Materials/GltfMaterialInfo.h"
-#include "Utils/myn/Sample.h"
 #include "CpuSkyAtmosphere/CpuSkyAtmosphere.h"
 #include <stack>
 #include <unordered_map>
@@ -16,16 +15,10 @@
 #include <condition_variable>
 #if GRAPHICS_DISPLAY
 #include <imgui.h>
-#include "Scene/Light.hpp"
 #include "Render/Vulkan/VulkanUtils.h"
 #include "Render/DebugDraw.h"
 #include "Render/Texture.h"
-#else
-#include <stb_image/stb_image_write.h>
 #endif
-
-#define NUM_CHANNELS 4
-#define SIZE_PER_CHANNEL 1
 
 // include this generated header to be able to use the kernels
 #if ISPC
@@ -221,11 +214,11 @@ void Pathtracer::initialize() {
 			}
 			delete subimage_buffers;
 		}
-		image_buffer = new unsigned char[width * height * NUM_CHANNELS * SIZE_PER_CHANNEL];
+		image_buffer = new unsigned char[width * height * PATHTRACER_OUT_NUM_CHANNELS * PATHTRACER_OUT_SIZE_PER_CHANNEL];
 		subimage_buffers = new unsigned char*[cached_config.NumThreads];
 		for (int i=0; i<cached_config.NumThreads; i++) {
 			subimage_buffers[i] = new unsigned char[
-			cached_config.TileSize * cached_config.TileSize * NUM_CHANNELS *SIZE_PER_CHANNEL];
+			cached_config.TileSize * cached_config.TileSize * PATHTRACER_OUT_NUM_CHANNELS *PATHTRACER_OUT_SIZE_PER_CHANNEL];
 		}
 
 		// queue tasks, spawn threads, etc.
@@ -394,7 +387,7 @@ void Pathtracer::reset() {
 	cumulative_render_time = 0.0f;
 	generate_pixel_offsets();
 
-	memset(image_buffer, 40, width * height * NUM_CHANNELS * SIZE_PER_CHANNEL);
+	memset(image_buffer, 40, width * height * PATHTRACER_OUT_NUM_CHANNELS * PATHTRACER_OUT_SIZE_PER_CHANNEL);
 #if GRAPHICS_DISPLAY
 	paused = true;
 	notified_pause_finish = true;
@@ -649,9 +642,3 @@ Asset* Pathtracer::get_scene_asset() {
 	EXPECT(scene_asset==nullptr, false)
 	return scene_asset;
 }
-
-// file that contains the actual path tracing meat
-#include "PathtracerCore.inl"
-
-// and file that contains loading / storing stuff to/from buffers (not as relevant for a renderer)
-#include "PathtracerBufferOperations.inl"

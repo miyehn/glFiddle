@@ -58,7 +58,7 @@ namespace
 		deferred = 1,
 		pathtracer = 2,
 		rtx = 3
-	} renderer_index = e_renderer::deferred;
+	} renderer_index = e_renderer::simple;
 
 	std::vector<Renderer*> renderers{};
 

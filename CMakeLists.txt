@@ -33,6 +33,8 @@ set(ELLYN_SRC
 	src/Scene/AABB.cpp
 	src/Pathtracer/Primitive.cpp
 	src/Pathtracer/Pathtracer.cpp
+	src/Pathtracer/PathtracerCore.cpp
+	src/Pathtracer/PathtracerBufferOperations.cpp
 	src/Pathtracer/BSDF.cpp
 	src/Pathtracer/PathtracerLight.cpp
 	src/Pathtracer/BVH.cpp
@@ -102,10 +104,12 @@ set(ASZELEA_SRC
 	src/Pathtracer/PathtracerLight.cpp
 	src/Pathtracer/BVH.cpp
 	src/Pathtracer/Pathtracer.cpp
+	src/Pathtracer/PathtracerCore.cpp
+	src/Pathtracer/PathtracerBufferOperations.cpp
 	src/Utils/myn/Misc.cpp
 	src/Utils/TinyGLTFImpl.cpp
 	src/Utils/StbImageImpl.cpp
-	${CMAKE_BINARY_DIR}/pathtracer_kernel.o
+	# ${CMAKE_BINARY_DIR}/pathtracer_kernel.o # ISPC-specific
 	src/Assets/EnvironmentMapAsset.cpp
 	src/Utils/TinyExrImpl.cpp
 	src/Utils/myn/Sample.cpp
@@ -179,10 +183,12 @@ target_compile_definitions(ellyn PRIVATE GRAPHICS_DISPLAY=1)
 target_compile_definitions(asz PRIVATE GRAPHICS_DISPLAY=0)
 target_compile_definitions(vin PRIVATE GRAPHICS_DISPLAY=0)
 
+# definitions
 add_definitions(-DROOT_DIR="${CMAKE_SOURCE_DIR}")
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
 add_definitions(-DDEBUG=1)
+add_definitions(-DISPC=0)
 
 message(STATUS "${CMAKE_SOURCE_DIR}/lib/libconfig++d.lib")
 
@@ -205,7 +211,6 @@ add_custom_target(ispc
 
 # [10/2024] disabling ispc for now because it's not installed on this pc
 # add_dependencies(ellyn ispc)
-add_definitions(-DISPC=0)
 
 #-------- vulkan shaders --------
 set(VULKAN_SHADERS_SRC_DIR ${CMAKE_SOURCE_DIR}/shaders)

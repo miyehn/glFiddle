@@ -25,7 +25,12 @@ namespace myn::sky {
 class CpuSkyAtmosphere;
 }
 
+#if ISPC
 struct ISPC_Data;
+#endif
+
+#define PATHTRACER_OUT_NUM_CHANNELS 4
+#define PATHTRACER_OUT_SIZE_PER_CHANNEL 1
 
 class Pathtracer : public Renderer {
 public:
